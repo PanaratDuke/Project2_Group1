@@ -1,0 +1,21 @@
+Git & GitHub Tutorial for Beginners #11 - Collaborating on GitHub
+
+https://www.youtube.com/watch?v=MnUd31TvBoU
+
+If you don't want to watch VDO here is short version
+
+git clone my repo into your local
+
+git pull origin master (to make sure that you got latest update)
+
+git checkout -b new_branch_name (create new branch for you to add into repo)
+
+add or remove files in your local repo then
+
+git add .
+
+git commit -m "comment what you did with those file"
+
+git push origin new_branch_name
+
+then slack me to merge your new_brance_name to origin master

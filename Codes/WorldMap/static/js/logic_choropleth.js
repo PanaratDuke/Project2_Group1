@@ -1,32 +1,39 @@
 var geojson;
-var info = L.control();
+// var info = L.control();
+
 // blank out map so it can be replace if needed.
 var container = L.DomUtil.get('map'); if(container != null){ container._leaflet_id = null; }
 
-// Initialize all of the LayerGroups we'll be using
-var layers = {
-    LITERACY: new L.LayerGroup(),
-    UNEMPLOYMENT: new L.LayerGroup()
-};
+// Variables to use for layers
+var literacyMarkers=[];
+var unemploymentMarkers=[];
 
-// Create a map object with layers
-var myMap = L.map("map", {
-    center: [15.5994, -28.6731],
-    zoom: 3,
-    layers: [
-        layers.LITERACY,
-        layers.UNEMPLOYMENT
-    ]
-});
+// Initialize all of the LayerGroups we'll be using
+// var layers = {
+//     LITERACY: new L.LayerGroup(),
+//     UNEMPLOYMENT: new L.LayerGroup()
+// };
 
 // Create an overlays object to add to the layer control
-var overlays={
-    "Literacy": layers.LITERACY,
-    "Unemployment": layers.UNEMPLOYMENT
-};
+// var overlays={
+//     "Literacy": literacy,
+//     "Unemployment": unemployment
+// };
+
+// // Create a map object with layers
+// var myMap = L.map("map", {
+//     center: [15.5994, -28.6731],
+//     zoom: 3,
+//     // layers: [
+//     //     Literacy,
+//     //     unemployment
+//     // ]
+// });
+
+
 
 // Create a control for the layers, add overlay layers to it
-L.control.layers(null, overlays).addTo(myMap);
+// L.control.layers(null, overlays).addTo(myMap);
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -144,6 +151,8 @@ d3.json('static/data/updated_countries.geojson').then(function(countryData){
         onEachFeature: onEachFeature
     }).addTo(myMap);
     // console.log("Country Data in geoJson: ",countryData);
+    // geojson.bringToFront();
+
 });
 
 d3.csv("static/data/world_map_data.csv").then(function(worldData){
@@ -160,26 +169,59 @@ d3.csv("static/data/world_map_data.csv").then(function(worldData){
         d.distribution_of_family_income = +d.distribution_of_family_income;
         d.literacy_rate = +d.literacy_rate;
 
-        literacy=d.literacy_rate;
+        //literacy=d.literacy_rate;
         // console.log("d.literacy_rate :", d.literacy_rate);
-
-        L.circle([d.lattitude,d.longitude],{
+        
+        literacyMarkers.push(
+            L.circle([d.lattitude,d.longitude],{
             fillOpacity: 0.85,
             // color:"white",
             fillColor:"steelblue",
             radius: markerSize(d.literacy_rate)
             
-        }).bindPopup("<h1>" + d.country + "</h1> <hr> <h3>Literacy Rate: " + d.literacy_rate + "</h3>").addTo(myMap);
+        }).bindPopup("<h1>" + d.country + "</h1> <hr> <h3>Literacy Rate: " + d.literacy_rate + "</h3>").addTo(myMap)
+        );
+        // 
+        
 
-        L.circle([d.lattitude,d.longitude],{
+        unemploymentMarkers.push(
+            L.circle([d.lattitude,d.longitude],{
             fillOpacity: 0.85,
             color:"pink",
             fillColor:"red",
             radius: markerSizeUnEmployment(d.unemployment_rate)
             
-        }).bindPopup("<h1>" + d.country + "</h1> <hr> <h3>Unemployement Rate: " + d.unemployment_rate + "</h3>").addTo(myMap);
+        }).bindPopup("<h1>" + d.country + "</h1> <hr> <h3>Unemployement Rate: " + d.unemployment_rate + "</h3>").addTo(myMap)
+        );
+        // 
 
     });
     
     
 });
+
+var literacy = L.layerGroup(literacyMarkers);
+var unemployment = L.layerGroup(unemploymentMarkers);
+
+
+
+
+// Create a map object and add the default ones to the map:
+var myMap = L.map("map", {
+    center: [15.5994, -28.6731],
+    zoom: 3,
+    layers: [literacy] 
+});
+
+// Create an object with key:value pairs.  The key sets the text for the layer in the control, value is a reference to the layer.
+var overlayMaps = {
+    "test-Literacy": literacy,
+    "test-Unemployment": unemployment
+};
+
+L.control.layers(null, overlayMaps{
+        collapsed: false
+}).addTo(myMap);
+
+
+

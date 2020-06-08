@@ -1,0 +1,44 @@
+create VM in git bash terminal
+
+Create new folder and add all requirement Folder and files
+1) Static Folder
+2) databasefile.db
+3) requirements.txt
+4) application.py
+
+Use cmd terminal and change directory where new folder is.
+
+Create New Environment
+> python -m venv new_env_name
+
+Activate New Environment
+> new_env_name
+
+Check if there is anything in new environment
+(new_env_name)>pip freeze
+
+Run to see if application.py is working
+(new_env_name)>python application.py
+
+Pip install all requirements such as pandas, flask, flask_cors, python
+(new_env_name)>pip install pandas
+
+Print evn to requirements.txt
+(new_env_name)>pip freeze > requirements.txt
+
+Check requirements.txt
+(new_env_name)>type requirements.txt 
+
+Then create new folder that will be for the cloud in this case folder call Project2_Cloud
+Change dir to Project2_Cloud
+Create new environment
+Project2_Cloud>python -m venv venv2
+
+(venv2) >pip freeze
+
+(venv2) >pip install -r requirements.txt
+
+
+
+
+
