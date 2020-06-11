@@ -12,7 +12,7 @@ Create New Environment
 > python -m venv new_env_name
 
 Activate New Environment
-> new_env_name
+> .\new_env_name\Scripts\activate
 
 Check if there is anything in new environment
 (new_env_name)>pip freeze
@@ -36,7 +36,7 @@ Project2_Cloud>python -m venv venv2
 
 (venv2) >pip freeze
 
-(venv2) >pip install -r requirements.txt
+(venv2) >pip freeze -r requirements.txt
 
 
 

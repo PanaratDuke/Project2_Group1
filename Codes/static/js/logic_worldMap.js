@@ -29,7 +29,16 @@ d3.json(url).then(data=>{
     // console.log("data=", data);
     // console.log("edu_exp_inner_loop=",edu_exp);
     for (var i = 0; i<data.length;i++){
-        console.log(data[i].latitude);
+        // console.log(data[i].latitude);
+        var location = [`${data[i].latitude},${data[i].longitude}`];
+        console.log("location : ",location);
+        L.circle(location,{
+            fillOpacity: 0.75,
+            color: "white",
+            fillColor: color,
+            // Adjust radius
+            radius: countries[i].points * 1500
+            }).bindPopup("<h1>" + countries[i].name + "</h1> <hr> <h3>Points: " + countries[i].points + "</h3>").addTo(myMap);
     }
     
 

@@ -154,9 +154,9 @@ d3.json('static/data/updated_countries.geojson').then(function(countryData){
     // geojson.bringToFront();
 
 });
-
-d3.csv("static/data/world_map_data.csv").then(function(worldData){
-    // console.log("worldData : ", worldData)
+var url="http://localhost:5000/api/worldMapData/2008";
+d3.json(url).then(function(worldData){
+    console.log("worldData : ", worldData)
     // console.log("worldData.country :", d3.entries(worldData))
 
     worldData.forEach(function(d){
@@ -168,6 +168,7 @@ d3.csv("static/data/world_map_data.csv").then(function(worldData){
         d.unemployment_rate = +d.unemployment_rate;
         d.distribution_of_family_income = +d.distribution_of_family_income;
         d.literacy_rate = +d.literacy_rate;
+        console.log("d.literacy_rate: ",d.literacy_rate);
 
         //literacy=d.literacy_rate;
         // console.log("d.literacy_rate :", d.literacy_rate);
@@ -177,7 +178,8 @@ d3.csv("static/data/world_map_data.csv").then(function(worldData){
             fillOpacity: 0.85,
             // color:"white",
             fillColor:"steelblue",
-            radius: markerSize(d.literacy_rate)
+            radius: markerSize(d.literacy_rate),
+            weight: 0.5
             
         }).bindPopup("<h1>" + d.country + "</h1> <hr> <h3>Literacy Rate: " + d.literacy_rate + "</h3>").addTo(myMap)
         );
@@ -189,7 +191,8 @@ d3.csv("static/data/world_map_data.csv").then(function(worldData){
             fillOpacity: 0.85,
             color:"pink",
             fillColor:"red",
-            radius: markerSizeUnEmployment(d.unemployment_rate)
+            radius: markerSizeUnEmployment(d.unemployment_rate),
+            weight: 0.5
             
         }).bindPopup("<h1>" + d.country + "</h1> <hr> <h3>Unemployement Rate: " + d.unemployment_rate + "</h3>").addTo(myMap)
         );

@@ -13,8 +13,10 @@ from flask_cors import CORS
 #################################################
 # Database Setup
 #################################################
-engine = create_engine("sqlite:///Resources/factbook.sqlite3")
-
+# engine = create_engine("sqlite:///factbook.sqlite3")
+sl_conn_string = 'sqlite:///Resources/factbook.sqlite3'
+pg_conn_string = 'postgresql://group1:project2@education1.c1nbp1eyrpzu.us-east-2.rds.amazonaws.com:5432/factbook1'
+engine = create_engine(pg_conn_string)
 # reflect an existing database into a new model
 Base = automap_base()
 # reflect the tables
@@ -72,6 +74,17 @@ def properties():
 @app.route("/api/<int:year>")
 def year_callback(year):
     df = pd.read_sql(f"select * from all_data where year = {year} and education_expenditures is not null", engine)
+    return df.to_json(orient='records')
+
+@app.route("/api/worldMapData")
+def worldMapData():
+    result = engine.execute("select * from v_years")
+    year_list = [row.year for row in result]
+    return jsonify(year_list)
+
+@app.route("/api/worldMapData/<int:year>")
+def worldMapData_callback(year):
+    result = df = pd.read_sql(f"select country, latitude,longitude, education_expenditures, literacy_rate, unemployment_rate, purchasing_power_parity,distribution_of_family_income from all_data where year = {year} and education_expenditures is not null", engine)
     return df.to_json(orient='records')
 
 if __name__ == '__main__':
