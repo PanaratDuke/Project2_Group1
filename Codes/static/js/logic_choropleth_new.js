@@ -1,81 +1,82 @@
 var geojson;
-// var info = L.control();
+var info = L.control();
 
 // blank out map so it can be replace if needed.
-var container = L.DomUtil.get('map'); if(container != null){ container._leaflet_id = null; }
+var container = L.DomUtil.get('map'); if (container != null) { container._leaflet_id = null; }
+
 
 // Variables to use for layers
-var literacyMarkers=[];
-var unemploymentMarkers=[];
+var literacyMarkers = [];
+var unemploymentMarkers = [];
 
 
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-    maxZoom: 18, 
+    maxZoom: 18,
     id: 'mapbox/streets-v11',
     tileSize: 512,
     zoomOffset: -1,
     accessToken: API_KEY
-  }).addTo(myMap);  
+}).addTo(myMap);
 
 
-function markerSize(literacy_rate){
+function markerSize(literacy_rate) {
     return literacy_rate * 1000;
 }
 
-function markerSizeUnEmployment(unemployment_rate){
+function markerSizeUnEmployment(unemployment_rate) {
     return unemployment_rate * 5000;
 }
 
-function getColor(d){
+function getColor(d) {
     return d > 8 ? '#800026' :
-           d > 7  ? '#BD0026' :
-           d > 6  ? '#E31A1C' :
-           d > 5  ? '#FC4E2A' :
-           d > 4  ? '#FD8D3C' :
-           d > 3  ? '#FEB24C' :
-           d > 1  ? '#FED976' :
-                    '#FFEDA0';
+        d > 7 ? '#BD0026' :
+            d > 6 ? '#E31A1C' :
+                d > 5 ? '#FC4E2A' :
+                    d > 4 ? '#FD8D3C' :
+                        d > 3 ? '#FEB24C' :
+                            d > 1 ? '#FED976' :
+                                '#FFEDA0';
 
 }
 
-function style(feature){
-    return{
+function style(feature) {
+    return {
         fillColor: getColor(feature.properties.Edu_Exp),
-        weight:2,
-        opacity:1,
-        color:'lightgray',
-        dashArray:'1',
+        weight: 2,
+        opacity: 1,
+        color: 'lightgray',
+        dashArray: '1',
         fillOpacity: 0.7
 
 
     };
 }
 
-function highlightFeature(e){
+function highlightFeature(e) {
     var layer = e.target;
 
     layer.setStyle({
-        weight:5,
+        weight: 5,
         color: '#666',
-        dashArray:'',
-        fillOpacity:0.7
+        dashArray: '',
+        fillOpacity: 0.7
     });
 
-    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge){
+    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
         layer.bringToFront();
     }
-    console.log("layer.feature=",layer.feature.properties);
+    console.log("layer.feature=", layer.feature.properties);
     info.update(layer.feature.properties);
 }
 
-function resetHighlight(e){
+function resetHighlight(e) {
     geojson.resetStyle(e.target);
     info.update();
 }
 
-function onEachFeature(feature, layer){
+function onEachFeature(feature, layer) {
     layer.on({
         mouseover: highlightFeature,
         mouseout: resetHighlight,
@@ -84,22 +85,22 @@ function onEachFeature(feature, layer){
 
 
 
-info.onAdd = function(myMap){
-    this._div = L.DomUtil.create('div','info');
+info.onAdd = function (myMap) {
+    this._div = L.DomUtil.create('div', 'info');
     this.update();
     return this._div;
 };
 
 // method that we will use to update the control based on feature properties passed
-info.update = function(props){
-    this._div.innerHTML = '<h4>World Education Expenditures</h4>' +  (props ?
+info.update = function (props) {
+    this._div.innerHTML = '<h4>World Education Expenditures</h4>' + (props ?
         '<b>' + props.ADMIN + '</b><br /><hr>' + props.Edu_Exp + ' % of GDP'
         : 'Hover over a state');
 };
 
 info.addTo(myMap);
 
-var legend = L.control({position: 'bottomleft'});
+var legend = L.control({ position: 'bottomleft' });
 
 legend.onAdd = function (map) {
 
@@ -120,8 +121,8 @@ legend.onAdd = function (map) {
 legend.addTo(myMap);
 
 
-d3.json('static/data/updated_countries.geojson').then(function(countryData){
-    geojson = L.geoJson(countryData,{
+d3.json('static/data/updated_countries.geojson').then(function (countryData) {
+    geojson = L.geoJson(countryData, {
         style: style,
         onEachFeature: onEachFeature
     }).addTo(myMap);
@@ -129,47 +130,47 @@ d3.json('static/data/updated_countries.geojson').then(function(countryData){
     // geojson.bringToFront();
 
 });
-var url="http://localhost:5000/api/worldMapData/2008";
-d3.json(url).then(function(worldData){
-    console.log("worldData : ", worldData)
+var url = "http://localhost:5000/api/worldMapData/2008";
+d3.json(url).then(data => {
+    console.log("worldData : ", data)
     // console.log("worldData.country :", d3.entries(worldData))
-    for (var i = 0; i<data.length;i++){
+    for (var i = 0; i < data.length; i++) {
         // console.log(data[i].latitude);
         var location = [`${data[i].latitude},${data[i].longitude}`];
         var country = data[i].country;
         var literacyRate = data[i].literacy_rate;
         var unemploymentRate = data[i].unemployment_rate;
         literacyMarkers.push(
-            L.circle(location,{
-            fillOpacity: 0.85,
-            // color:"white",
-            fillColor:"steelblue",
-            radius: markerSize(d.literacy_rate),
-            weight: 0.5
-            
-        }).bindPopup(`<h1>  ${country} </h1> <hr> <h3>Literacy Rate: ${literacyRate} </h3>`).addTo(myMap)
+            L.circleMarker(location, {
+                fillOpacity: 0.85,
+                // color:"white",
+                fillColor: "steelblue",
+                radius: markerSize(d.literacy_rate),
+                weight: 0.5
+
+            }).bindPopup(`<h1>  ${country} </h1> <hr> <h3>Literacy Rate: ${literacyRate} </h3>`).addTo(myMap)
         );
         // 
-        
+
 
         unemploymentMarkers.push(
-            L.circle(location,{
-            fillOpacity: 0.85,
-            color:"pink",
-            fillColor:"red",
-            radius: markerSizeUnEmployment(d.unemployment_rate),
-            weight: 0.5
-            
-        }).bindPopup(`<h1>  ${country} </h1> <hr> <h3>Unemployment Rate: ${unemploymentRate} </h3>`).addTo(myMap)
+            L.circle(location, {
+                fillOpacity: 0.85,
+                color: "pink",
+                fillColor: "red",
+                radius: markerSizeUnEmployment(d.unemployment_rate),
+                weight: 0.5
+
+            }).bindPopup(`<h1>  ${country} </h1> <hr> <h3>Unemployment Rate: ${unemploymentRate} </h3>`).addTo(myMap)
         );
     }//for loop
-    
-
-        
 
 
-    
-    
+
+
+
+
+
 });
 
 var literacy = L.layerGroup(literacyMarkers);
@@ -182,7 +183,7 @@ var unemployment = L.layerGroup(unemploymentMarkers);
 var myMap = L.map("map", {
     center: [15.5994, -28.6731],
     zoom: 3,
-    layers: [literacy] 
+    layers: [literacy]
 });
 
 // Create an object with key:value pairs.  The key sets the text for the layer in the control, value is a reference to the layer.
@@ -191,8 +192,8 @@ var overlayMaps = {
     "test-Unemployment": unemployment
 };
 
-L.control.layers(null, overlayMaps,{
-        collapsed: false
+L.control.layers(null, overlayMaps, {
+    collapsed: false
 }).addTo(myMap);
 
 
