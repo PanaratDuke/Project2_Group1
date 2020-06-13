@@ -78,6 +78,7 @@ function style(feature) {
         color: 'lightgray',
         dashArray: '1',
         fillOpacity: 0.7,
+
         // weight: 0.5
 
 
@@ -108,7 +109,13 @@ function highlightFeature(e) {
 // the layer style to its default state (defined by our style function).
 function resetHighlight(e) {
     geojson.resetStyle(e.target);
-    info.update();
+    // e.target.bringToBack();
+    // info.update();
+    console.log('resetting');
+    // myMap.removeLayer(e.target);
+    // e.target.addTo(myMap);
+    myMap.removeLayer(geojson);
+    geojson.addTo(myMap);
 };
 
 // use the onEachFeature option to add the listeners on our state layers
@@ -118,22 +125,6 @@ function onEachFeature(feature, layer) {
         mouseout: resetHighlight,
     });
 };
-
-// info.onAdd = function (myMap) {
-//     this._div = L.DomUtil.create('div', 'info');
-//     this.update();
-//     return this._div;
-// };
-
-// info.update = function (props) {
-//     this._div.innerHTML = '<h4>World Education Expenditures</h4>' + (props ?
-//         '<b>' + props.ADMIN + '</b><br /><hr>' + props.Edu_Exp + ' % of GDP'
-//         : 'Hover over a state');
-// };
-
-// info.addTo(myMap);
-
-
 
 
 //###############################
@@ -161,7 +152,6 @@ d3.json('static/data/updated_countries.geojson').then(countryData => {
     }).addTo(myMap);
     console.log("Country Data in geoJson: ", countryData);
     // geojson.bringToFront();
-
 });
 
 // Facters Markers
