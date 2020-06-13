@@ -52,6 +52,10 @@ def api_routes():
         f"/api/&lt;country&gt;/&lt;property&gt;<br/>"
         f"<i>where years are YYYY</i>"
         f"<i>and countries are full names, like Algeria</i>"
+        f"/api/factors"
+        f"/api/worldMapData"
+        f'<a href="/"><h4>Back</h4></a><br/>' 
+        
     )
 
 @app.route("/api/years")
@@ -67,6 +71,11 @@ def countries():
     result = engine.execute("select * from v_countries")
     return jsonify([row.country for row in result])
 
+@app.route("/api/factors")
+def factors():
+    result = engine.execute(f"select year, country, education_expenditures, literacy_rate, unemployment_rate, purchasing_power_parity,distribution_of_family_income from factbook_data where education_expenditures is not null")
+    return jsonify(result)
+    
 @app.route("/api/properties")
 def properties():
     return jsonify([c.name for c in meta.tables['all_data'].columns][5:])
@@ -76,15 +85,23 @@ def year_callback(year):
     df = pd.read_sql(f"select * from all_data where year = {year} and education_expenditures is not null", engine)
     return df.to_json(orient='records')
 
-@app.route("/api/worldMapData")
-def worldMapData():
-    result = engine.execute("select * from v_years")
-    year_list = [row.year for row in result]
-    return jsonify(year_list)
+# @app.route("/api/worldMapData")
+# def worldMapData():
+#     result = engine.execute("select * from v_years")
+#     year_list = [row.year for row in result]
+#     return jsonify(year_list)
 
-@app.route("/api/worldMapData/<int:year>")
-def worldMapData_callback(year):
-    result = df = pd.read_sql(f"select country, latitude,longitude, education_expenditures, literacy_rate, unemployment_rate, purchasing_power_parity,distribution_of_family_income from all_data where year = {year} and education_expenditures is not null", engine)
+@app.route("/api/worldMapData")
+def worldMapData_callback():
+    # result = df = pd.read_sql(f"select country, latitude,longitude, education_expenditures, literacy_rate, unemployment_rate, purchasing_power_parity,distribution_of_family_income from all_data where year = {year} and education_expenditures is not null", engine)
+    result = df = pd.read_sql(f"select year,country, latitude,longitude, education_expenditures,"+ \
+        "literacy_rate, unemployment_rate, purchasing_power_parity,distribution_of_family_income "+ \
+        "from all_data "+ \
+        "where education_expenditures is not null and "+ \
+        "literacy_rate is not null and "+ \
+        "unemployment_rate is not null and "+ \
+        "purchasing_power_parity is not null and "+ \
+        "distribution_of_family_income is not null", engine)
     return df.to_json(orient='records')
 
 if __name__ == '__main__':

@@ -108,6 +108,9 @@ function highlightFeature(e) {
 // geojson.resetStyle method will reset 
 // the layer style to its default state (defined by our style function).
 function resetHighlight(e) {
+    // what this function does
+    // what is the argument
+    // what it returns
     geojson.resetStyle(e.target);
     // e.target.bringToBack();
     // info.update();
@@ -155,13 +158,13 @@ d3.json('static/data/updated_countries.geojson').then(countryData => {
 });
 
 // Facters Markers
-var url = "http://localhost:5000/api/worldMapData/2008";
+var url = "http://localhost:5000/api/worldMapData";
 d3.json(url).then(data => {
 
     console.log("data : ", data);
 
     for (var i = 0; i < data.length; i++) {
-        var country = data[i].country;
+        var country = data[i].country_field;
         var literacyRate = data[i].literacy_rate;
         var unemploymentRate = data[i].unemployment_rate;
         var ppp = data[i].purchasing_power_parity;
